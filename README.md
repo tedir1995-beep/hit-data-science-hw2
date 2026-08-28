@@ -17,6 +17,7 @@ The modeling frame uses the latest snapshot (1,000 unique models) to avoid treat
 ## Repository contents
 
 - `notebooks/huggingface_models_error_analysis.ipynb` - complete executable analysis, explanations, outputs, and charts.
+- `reports/HOMEWORK_2_REPORT.md` - complete submission in organized Markdown form with all figures.
 - `reports/OPEN_QUESTIONS.md` - concise written answers generated from the verified results.
 - `reports/ASSIGNMENT_CHECKLIST.md` - requirement-by-requirement audit.
 - `reports/REVIEW_GUIDE.md` - short guide for reviewing the submission.

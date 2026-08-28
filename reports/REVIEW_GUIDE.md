@@ -1,17 +1,18 @@
 # Review Guide
 
-The complete submission is in `notebooks/huggingface_models_error_analysis.ipynb`.
+The complete submission is available in both `HOMEWORK_2_REPORT.md` and `notebooks/huggingface_models_error_analysis.ipynb`.
 
 ## Suggested review order
 
-1. Read the title, dataset framing, and target definitions in Sections 1-2.
-2. Check the four-model regression comparison and preferred-model reasoning in Section 3.
-3. Review residual patterns, the top 5% errors, and error statistics in Section 4.
-4. Check the three-model classification comparison in Section 5.
-5. Review the confusion matrix, probability errors, feature regions, thresholds, F-beta, MCC, and ROC analysis in Section 6.
-6. Read the integrated discussion and final reflection in Sections 7-8.
-7. Use `ASSIGNMENT_CHECKLIST.md` to confirm every PDF requirement is covered.
-8. Use `QA_REPORT.md` for the final execution and visual-verification record.
+1. Open `HOMEWORK_2_REPORT.md` for the organized Markdown version with all figures.
+2. Read the title, dataset framing, and target definitions in Sections 1-2.
+3. Check the four-model regression comparison and preferred-model reasoning in Section 3.
+4. Review residual patterns, the top 5% errors, and error statistics in Section 4.
+5. Check the three-model classification comparison in Section 5.
+6. Review the confusion matrix, probability errors, feature regions, thresholds, F-beta, MCC, and ROC analysis in Section 6.
+7. Read the integrated discussion and final reflection in Sections 7-8.
+8. Use `ASSIGNMENT_CHECKLIST.md` to confirm every PDF requirement is covered.
+9. Use `QA_REPORT.md` for the final execution and visual-verification record.
 
 ## Reproducibility checks
 
