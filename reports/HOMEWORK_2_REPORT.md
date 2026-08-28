@@ -1,6 +1,6 @@
 # Homework 2 - Regression and Classification Error Analysis
 
-**Student:** טדי רבליס<br>
+**Student:** tedi revelis<br>
 **Student ID:** 313261919<br>
 **Dataset:** Hugging Face Models Trending
 
@@ -8,7 +8,7 @@ This Markdown report presents the complete submission in the order of the assign
 
 ## 1. Dataset and problem formulation
 
-The frozen Homework 1 dataset contains 156,000 daily observations and 13 original columns. Each row describes a trending Hugging Face model at a particular snapshot date, including downloads, likes, creation and update dates, task, library, tags, and access status.
+The frozen Hugging Face Models Trending dataset contains 156,000 daily observations and 13 original columns. Each row describes a trending Hugging Face model at a particular snapshot date, including downloads, likes, creation and update dates, task, library, tags, and access status.
 
 The modeling frame uses the latest snapshot, July 30, 2026, which contains exactly 1,000 unique model IDs. This avoids treating repeated observations of the same model as independent samples.
 
@@ -256,12 +256,3 @@ The preferred Random Forest achieves an out-of-fold ROC-AUC of 0.8913. ROC-AUC m
 2. **Are failures due to data, model, or formulation?** All three. Missing and omitted variables are data limitations; linearity and local sparsity are model limitations; the trending-only sample and binary gated target are formulation choices.
 3. **What improvements are proposed?** Leakage-safe time features, authoritative metadata repair, nested tuning, calibration, explicit error costs, and additional gated observations.
 4. **What insights were gained?** Aggregate metrics hide structured failures. Minority-class behavior, residual tails, fold stability, and the operating threshold determine whether a model is reliable in practice.
-
-## Submission files
-
-- `HOMEWORK_2_REPORT.md` - this complete Markdown report.
-- `OPEN_QUESTIONS.md` - concise numerical answers.
-- `ASSIGNMENT_CHECKLIST.md` - requirement-by-requirement mapping.
-- `QA_REPORT.md` - execution and visual-verification evidence.
-- `REVIEW_GUIDE.md` - recommended review order.
-- `../notebooks/huggingface_models_error_analysis.ipynb` - executable notebook with embedded outputs.

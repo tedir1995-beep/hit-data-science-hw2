@@ -1,6 +1,6 @@
 # Homework 2 - Written Answers
 
-**Student:** טדי רבליס<br>
+**Student:** tedi revelis<br>
 **Student ID:** 313261919<br>
 **Dataset:** Hugging Face Models Trending
 
@@ -14,7 +14,7 @@ The required Linear Regression, Decision Tree, and Random Forest models use the 
 
 | Model | MAE | MSE | RMSE | R2 | Fold RMSE SD |
 | --- | --- | --- | --- | --- | --- |
-| Random Forest | 1,873,999.9833 | 94,809,189,863,379.2656 | 9,737,001.0713 | 0.0755 | 7,263,313.5518 |
+| Random Forest | 1,873,999.9833 | 94,809,189,863,379.2344 | 9,737,001.0713 | 0.0755 | 7,263,313.5518 |
 | Decision Tree | 2,057,339.2277 | 97,132,917,570,062.0312 | 9,855,603.3590 | 0.0529 | 7,236,446.9667 |
 | KNN (bonus) | 1,960,761.2634 | 101,894,913,683,865.6250 | 10,094,301.0498 | 0.0064 | 7,463,382.6748 |
 | Linear Regression | 2,567,832.7874 | 388,645,134,205,866.7500 | 19,714,084.6657 | -2.7897 | 15,891,607.5161 |

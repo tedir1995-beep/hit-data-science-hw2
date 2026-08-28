@@ -1,11 +1,11 @@
 # Data Science Homework 2 - Regression and Classification Error Analysis
 
-**Student:** טדי רבליס<br>
+**Student:** tedi revelis<br>
 **Student ID:** 313261919<br>
 **Course:** Introduction to Data Science<br>
 **Assignment:** Homework 2 - Regression and Classification: Error Analysis
 
-This repository contains a reproducible regression and classification study using the same frozen **Hugging Face Models Trending** dataset submitted for Homework 1.
+This repository contains a reproducible regression and classification study using the frozen **Hugging Face Models Trending** dataset.
 
 ## Research questions
 
@@ -19,11 +19,8 @@ The modeling frame uses the latest snapshot (1,000 unique models) to avoid treat
 - `notebooks/huggingface_models_error_analysis.ipynb` - complete executable analysis, explanations, outputs, and charts.
 - `reports/HOMEWORK_2_REPORT.md` - complete submission in organized Markdown form with all figures.
 - `reports/OPEN_QUESTIONS.md` - concise written answers generated from the verified results.
-- `reports/ASSIGNMENT_CHECKLIST.md` - requirement-by-requirement audit.
-- `reports/REVIEW_GUIDE.md` - short guide for reviewing the submission.
-- `reports/QA_REPORT.md` - reproducibility and visual-verification evidence.
 - `reports/figures/` - exported figures used by the notebook and report.
-- `data/raw/hf_models_snapshot.csv` - the unchanged Homework 1 dataset.
+- `data/raw/hf_models_snapshot.csv` - the frozen source dataset.
 - `requirements.txt` - reproducible Python environment.
 
 ## Reproduce the analysis
@@ -45,4 +42,4 @@ Open the notebook and choose **Run All** from the repository root. All random op
 - SHA-256: `A74C74F76E7FDF3095861AFA3F52484ACE9C1B6EDD83B24B66F87BAA9DDD2966`
 - Kaggle source: [Hugging Face Models Trending](https://www.kaggle.com/datasets/zoupet/hugging-face-models-trending)
 
-The raw CSV is intentionally not edited in Excel because that can change date and Boolean formatting.
+The raw CSV is preserved without modification so its checksum and value formatting remain reproducible.
