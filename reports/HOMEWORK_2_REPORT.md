@@ -1,6 +1,6 @@
 # Homework 2 - Regression and Classification Error Analysis
 
-**Student:** tedi revelis<br>
+**Student:** Tedi Revelis<br>
 **Student ID:** 313261919<br>
 **Dataset:** Hugging Face Models Trending
 
@@ -37,6 +37,8 @@ All results use **5-fold cross-validation**.
 - Random seed `42` is used for reproducibility.
 
 Five folds provide a practical bias-variance compromise. Ten folds would leave only four or five gated examples in each classification validation fold and would make minority-class estimates less stable.
+
+The fixed model settings below were selected before evaluation as conservative, computationally practical defaults. They were not tuned on the reported out-of-fold scores; nested tuning is listed as a future improvement.
 
 ## 3. Regression models
 
@@ -86,7 +88,7 @@ Positive residuals are under-predictions. Negative residuals are over-prediction
 - **Are residuals centered around zero?** The mean residual is 1,222,514 downloads. The positive value indicates systematic under-prediction on the original scale, driven mainly by a small number of blockbuster models.
 - **Systematic patterns:** the residual cloud widens with predicted downloads. Exceptional models form a large positive tail.
 - **Heteroscedasticity:** yes. Error variance grows with model popularity, so the constant-variance assumption is not satisfied.
-- **High-error sectors:** among sectors containing at least ten models, `text-ranking` has the highest mean absolute error. `sentence-similarity` and `fill-mask` also contain large-error observations.
+- **High-error sectors:** among sectors containing at least ten models, `text-to-speech` has the highest observed rate of top-5% errors: 2 of 13 models, or 15.4%. The denominator is shown because this is a small group and the estimate is uncertain. `time-series` (3/22, 13.6%) and `sentence-similarity` (8/61, 13.1%) are next.
 
 ### 4.2 Residual distribution
 
@@ -107,11 +109,11 @@ The full-scale histogram is dominated by a small number of extreme positive resi
 
 ### 4.4 Extreme errors
 
-The top 5% absolute-error cutoff is **6,137,024 downloads**. Exactly 50 observations meet or exceed this cutoff.
+The top 5% is defined as the 50 largest absolute errors. Its cutoff is **6,201,936 downloads**.
 
 ![Highest-error pipeline sectors](figures/06_extreme_errors_by_pipeline.png)
 
-The individual extreme observations are displayed in the executable notebook with model ID, pipeline, library, actual value, prediction, residual, absolute error, and a transparent likely-source label.
+All 50 individual extreme observations are displayed in the executable notebook and exported to `EXTREME_ERROR_ANALYSIS.csv`. Each row includes the model ID, pipeline, library, actual value, prediction, residual, absolute error, error direction, pipeline sample size, scale relative to the dataset median, a transparent likely-source label, and an individualized note.
 
 The errors arise from a combination of:
 
@@ -129,13 +131,13 @@ The errors arise from a combination of:
 | Residual standard deviation | 9,664,784 |
 | Residual skewness | 18.032 |
 | Residual excess kurtosis | 408.629 |
-| 95th-percentile absolute error | 6,137,024 |
+| Top-5% absolute-error cutoff | 6,201,936 |
 
 The very large positive skewness and excess kurtosis demonstrate a heavy right tail. This indicates instability caused by exceptional under-predictions and confirms that average metrics alone are insufficient.
 
 ## 5. Classification models
 
-All classification models use the same features: downloads, likes, model age, update recency, tag count, pipeline, and library.
+All classification models use the same six descriptive features: likes, model age, update recency, tag count, pipeline, and library. `downloads` is intentionally excluded because gating can affect download activity, making it a potentially downstream proxy for the target. In a real system, authoritative gated-status metadata should be read directly; this classifier is an error-analysis benchmark rather than a replacement for that field.
 
 ### Models and hyperparameters
 
@@ -147,9 +149,9 @@ All classification models use the same features: downloads, likes, model age, up
 
 | Model | ROC-AUC | Average Precision | Precision | Recall | F1 | MCC | Balanced Accuracy | Fold AUC SD |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Random Forest | 0.8913 | 0.5574 | 0.6923 | 0.4091 | 0.5143 | 0.5165 | 0.7004 | 0.0640 |
-| Decision Tree | 0.7241 | 0.3564 | 0.1742 | 0.5227 | 0.2614 | 0.2476 | 0.7044 | 0.0641 |
-| Logistic Regression | 0.8322 | 0.2593 | 0.1976 | 0.7500 | 0.3128 | 0.3353 | 0.8049 | 0.0972 |
+| Random Forest | 0.8849 | 0.5938 | 0.7143 | 0.4545 | 0.5556 | 0.5547 | 0.7231 | 0.0719 |
+| Decision Tree | 0.7577 | 0.3685 | 0.1884 | 0.5909 | 0.2857 | 0.2817 | 0.7369 | 0.0432 |
+| Logistic Regression | 0.8320 | 0.2644 | 0.1921 | 0.7727 | 0.3077 | 0.3349 | 0.8116 | 0.0898 |
 
 ![Classification model comparison](figures/07_classification_model_comparison.png)
 
@@ -161,24 +163,24 @@ All classification models use the same features: downloads, likes, model age, up
 
 False negatives are considered more critical in this context. A false negative predicts that a gated model is unrestricted, which can break an automated download or deployment workflow. A false positive creates extra caution or manual review but does not incorrectly promise access.
 
-The recommended threshold is **0.2**, selected from out-of-fold predictions by maximum F2, which gives recall more weight than precision.
+To avoid choosing and evaluating a threshold on the same observations, the confusion matrix uses nested threshold selection. Inside each outer training fold, four-fold inner cross-validation selects the F2-maximizing threshold from 0.1 through 0.9; that threshold is then applied only to the untouched outer validation fold. The selected outer-fold thresholds are `[0.3, 0.3, 0.4, 0.2, 0.4]`.
 
 | Outcome | Count |
 |---|---:|
-| True negatives | 889 |
-| False positives | 67 |
-| False negatives | 12 |
-| True positives | 32 |
+| True negatives | 919 |
+| False positives | 37 |
+| False negatives | 15 |
+| True positives | 29 |
 
 ![Random Forest confusion matrix](figures/08_confusion_matrix.png)
 
-At this threshold, 32 of the 44 gated models are detected. The price of higher recall is 67 false-positive reviews.
+This leakage-safe threshold-selection policy detects 29 of the 44 gated models. Its precision is 0.439, recall 0.659, F1 0.527, F2 0.599, and MCC 0.512.
 
 ### 6.2 Probability-based analysis
 
 ![Predicted probabilities for correct and incorrect predictions](figures/09_probability_correctness.png)
 
-Correct predictions are usually more decisive, but the distributions overlap. There are **12 high-confidence errors** with confidence of at least 0.80. These errors are important because they reveal confident model failure rather than simple boundary uncertainty.
+Correct predictions are usually more decisive, but the distributions overlap. There are **11 incorrect predictions with an extreme class probability of at least 0.80**. Random Forest probabilities are not calibrated, so these are investigation candidates—not literal confidence guarantees.
 
 ### 6.3 Error as a function of features
 
@@ -186,40 +188,40 @@ Correct predictions are usually more decisive, but the distributions overlap. Th
 
 ![Misclassification regions](figures/11_classification_error_regions.png)
 
-- Misclassification varies across pipeline and download-tier combinations.
+- Misclassification varies across pipeline/library and likes-quartile combinations.
 - Sparse task regions can have very high observed error rates.
 - Heatmap cells are included only when they contain at least five models, reducing conclusions based on isolated observations.
-- Downloads and likes differ between correct and incorrect groups, but their distributions overlap substantially.
+- Likes, age, update recency, and tag count differ between correct and incorrect groups, but their distributions overlap substantially.
 
 ### 6.4 Threshold sensitivity
 
 | Threshold | Precision | Recall | F1 | F2 | MCC | Predicted positives |
 |---:|---:|---:|---:|---:|---:|---:|
-| 0.1 | 0.1777 | 0.7955 | 0.2905 | 0.4692 | 0.3228 | 197 |
-| 0.2 | 0.3232 | 0.7273 | 0.4476 | 0.5818 | 0.4513 | 99 |
-| 0.3 | 0.4333 | 0.5909 | 0.5000 | 0.5508 | 0.4796 | 60 |
-| 0.4 | 0.5641 | 0.5000 | 0.5301 | 0.5116 | 0.5109 | 39 |
-| 0.5 | 0.6923 | 0.4091 | 0.5143 | 0.4455 | 0.5165 | 26 |
-| 0.6 | 0.8125 | 0.2955 | 0.4333 | 0.3385 | 0.4778 | 16 |
-| 0.7 | 0.9000 | 0.2045 | 0.3333 | 0.2419 | 0.4195 | 10 |
-| 0.8 | 1.0000 | 0.1136 | 0.2041 | 0.1381 | 0.3304 | 5 |
-| 0.9 | 1.0000 | 0.0455 | 0.0870 | 0.0562 | 0.2087 | 2 |
+| 0.1 | 0.1750 | 0.7955 | 0.2869 | 0.4654 | 0.3194 | 200 |
+| 0.2 | 0.3056 | 0.7500 | 0.4342 | 0.5810 | 0.4437 | 108 |
+| 0.3 | 0.4516 | 0.6364 | 0.5283 | 0.5882 | 0.5110 | 62 |
+| 0.4 | 0.5952 | 0.5682 | 0.5814 | 0.5734 | 0.5628 | 42 |
+| 0.5 | 0.7143 | 0.4545 | 0.5556 | 0.4902 | 0.5547 | 28 |
+| 0.6 | 0.8000 | 0.3636 | 0.5000 | 0.4082 | 0.5266 | 20 |
+| 0.7 | 0.9286 | 0.2955 | 0.4483 | 0.3421 | 0.5139 | 14 |
+| 0.8 | 1.0000 | 0.1818 | 0.3077 | 0.2174 | 0.4186 | 8 |
+| 0.9 | 1.0000 | 0.1364 | 0.2400 | 0.1648 | 0.3621 | 6 |
 
 ![Threshold sensitivity](figures/12_threshold_sensitivity.png)
 
-Lower thresholds improve recall but create more false positives. Higher thresholds improve precision but miss more gated models. The F2-based operating threshold of 0.2 provides recall of 0.7273 and the best observed F2 of 0.5818.
+This fixed-threshold table is exploratory. Lower thresholds improve recall but create more false positives; higher thresholds improve precision but miss more gated models. The global maximum F2 occurs at 0.3, but it is not reported as an unbiased deployment estimate because it was selected on these same out-of-fold predictions. The smallest joint metric changes occur across 0.8-0.9 and 0.5-0.6; the 0.8-0.9 interval is numerically stable but operationally poor because recall is very low. The largest changes occur across 0.1-0.2 and 0.2-0.3.
 
 ### F-beta as a function of beta
 
 ![F-beta as a function of beta](figures/13_fbeta_by_beta.png)
 
-Beta below 1 emphasizes precision. Beta above 1 emphasizes recall. The rising curve shows that the threshold-0.2 predictions are better aligned with recall-sensitive applications than with precision-sensitive applications.
+Beta below 1 emphasizes precision. Beta above 1 emphasizes recall. The curve evaluates the nested threshold-selection policy, not a threshold optimized and scored on the same rows.
 
 ### ROC-AUC
 
 ![Out-of-fold ROC curves](figures/14_roc_curve.png)
 
-The preferred Random Forest achieves an out-of-fold ROC-AUC of 0.8913. ROC-AUC measures ranking across thresholds; average precision is also reported because it is more sensitive to the rare gated class.
+The preferred Random Forest achieves an out-of-fold ROC-AUC of 0.8849 and average precision of 0.5938. ROC-AUC measures ranking across thresholds; average precision is emphasized because it is more sensitive to the rare gated class.
 
 ## 7. Critical discussion
 
@@ -231,6 +233,8 @@ The preferred Random Forest achieves an out-of-fold ROC-AUC of 0.8913. ROC-AUC m
 - Random Forest provides the best overall performance but is less interpretable.
 - The trending-only sample does not represent the complete Hugging Face Hub.
 - The gated class is rare, making classification metrics and threshold choice sensitive to a small number of cases.
+- Gated status is ordinarily observable metadata, so predicting it is an artificial benchmark rather than a recommended production design.
+- Random Forest probabilities are not calibrated and should not be treated as literal confidence values.
 
 ### Model assumptions and observed behavior
 
@@ -245,7 +249,7 @@ The preferred Random Forest achieves an out-of-fold ROC-AUC of 0.8913. ROC-AUC m
 1. Add leakage-safe longitudinal growth features from earlier snapshots.
 2. Retrieve missing library and license metadata from authoritative model cards or the Hugging Face API.
 3. Add model size, organization, deployment, and external-traffic indicators.
-4. Use nested cross-validation for hyperparameter and threshold selection.
+4. Use nested cross-validation for hyperparameter tuning; threshold selection is already evaluated with an inner/outer procedure here.
 5. Calibrate classification probabilities.
 6. Define an explicit cost matrix for false positives and false negatives.
 7. Collect more gated examples and validate performance separately by task and library.
